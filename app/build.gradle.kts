@@ -62,4 +62,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Core Retrofit library
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    // Converter library (to convert JSON to Objects)
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    // Optional: Logging Interceptor (to see network requests in Logcat)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }

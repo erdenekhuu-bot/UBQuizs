@@ -57,7 +57,6 @@ class QuizViewModel : ViewModel() {
         val nextQuestionIndex = currentState.currentQuestionIndex + 1
 
         if (nextQuestionIndex < currentState.currentLevel.questions.size) {
-            // Next question in the same level
             _uiState.update {
                 it.copy(
                     currentQuestionIndex = nextQuestionIndex,
@@ -67,7 +66,6 @@ class QuizViewModel : ViewModel() {
                 )
             }
         } else {
-            // Level is complete
             _uiState.update {
                 it.copy(
                     isLevelComplete = true
@@ -81,7 +79,6 @@ class QuizViewModel : ViewModel() {
         val nextLevelIndex = currentState.currentLevelIndex + 1
 
         if (nextLevelIndex < currentState.levels.size) {
-            // Move to next level
             _uiState.update {
                 it.copy(
                     currentLevelIndex = nextLevelIndex,
@@ -93,7 +90,6 @@ class QuizViewModel : ViewModel() {
                 )
             }
         } else {
-            // Game complete
             _uiState.update {
                 it.copy(
                     isLevelComplete = false,
@@ -102,7 +98,6 @@ class QuizViewModel : ViewModel() {
             }
         }
     }
-
     fun restartGame() {
         _uiState.value = QuizUiState()
     }
