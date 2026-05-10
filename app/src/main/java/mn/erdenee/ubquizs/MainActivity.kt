@@ -4,13 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import mn.erdenee.ubquizs.ui.QuizViewModel
+import mn.erdenee.ubquizs.ui.screens.GameCompleteScreen
+import mn.erdenee.ubquizs.ui.screens.LevelCompleteScreen
+import mn.erdenee.ubquizs.ui.screens.QuizScreen
 import mn.erdenee.ubquizs.ui.theme.UBQuizsTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             UBQuizsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    QuizApp(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -31,17 +34,34 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun QuizApp(
+    modifier: Modifier = Modifier,
+    viewModel: QuizViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UBQuizsTheme {
-        Greeting("Android")
+    androidx.compose.foundation.layout.Box(modifier = modifier.fillMaxSize()) {
+        when {
+            uiState.isGameComplete -> {
+                GameCompleteScreen(
+                    uiState = uiState,
+                    onRestart = { viewModel.restartGame() }
+                )
+            }
+            uiState.isLevelComplete -> {
+                LevelCompleteScreen(
+                    uiState = uiState,
+                    onNextLevel = { viewModel.nextLevel() }
+                )
+            }
+            else -> {
+                QuizScreen(
+                    uiState = uiState,
+                    onAnswerSelected = { viewModel.selectAnswer(it) },
+                    onCheckAnswer = { viewModel.checkAnswer() },
+                    onNext = { viewModel.nextQuestionOrLevel() }
+                )
+            }
+        }
     }
 }
