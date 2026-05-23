@@ -38,9 +38,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val painter= painterResource(id=R.drawable.banner)
-            val description="Background main banner"
-            val title="UBQuiz game"
             UBQuizsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     QuizApp(modifier = Modifier.padding(innerPadding))
@@ -85,24 +82,5 @@ fun QuizApp(
 //                )
 //            }
 //        }
-    }
-}
-
-@Composable
-fun bannerimage(
-    painter: Painter,
-    contentDescription: String?,
-    title:String,
-    modifier: Modifier = Modifier
-){
-    Card(
-        modifier=modifier.fillMaxWidth(),
-        shape=RoundedCornerShape(16.dp),
-    ) {
-        Box(
-            modifier= Modifier.height(200.dp).background(Brush.verticalGradient(listOf(Color.White, Color.LightGray), startY = 300f))
-        ){
-            Image(painter=painter, contentDescription=contentDescription, contentScale = ContentScale.Crop)
-        }
     }
 }
