@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import mn.erdenee.ubquizs.ui.QuizViewModel
 import mn.erdenee.ubquizs.ui.screens.GameCompleteScreen
 import mn.erdenee.ubquizs.ui.screens.LevelCompleteScreen
+import mn.erdenee.ubquizs.ui.screens.LoginScreen
 import mn.erdenee.ubquizs.ui.screens.QuizScreen
 import mn.erdenee.ubquizs.ui.theme.UBQuizsTheme
 
@@ -61,28 +62,29 @@ fun QuizApp(
     val uiState by viewModel.uiState.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
-        when {
-            uiState.isGameComplete -> {
-                GameCompleteScreen(
-                    uiState = uiState,
-                    onRestart = { viewModel.restartGame() }
-                )
-            }
-            uiState.isLevelComplete -> {
-                LevelCompleteScreen(
-                    uiState = uiState,
-                    onNextLevel = { viewModel.nextLevel() }
-                )
-            }
-            else -> {
-                QuizScreen(
-                    uiState = uiState,
-                    onAnswerSelected = { viewModel.selectAnswer(it) },
-                    onCheckAnswer = { viewModel.checkAnswer() },
-                    onNext = { viewModel.nextQuestionOrLevel() }
-                )
-            }
-        }
+        LoginScreen()
+//        when {
+//            uiState.isGameComplete -> {
+//                GameCompleteScreen(
+//                    uiState = uiState,
+//                    onRestart = { viewModel.restartGame() }
+//                )
+//            }
+//            uiState.isLevelComplete -> {
+//                LevelCompleteScreen(
+//                    uiState = uiState,
+//                    onNextLevel = { viewModel.nextLevel() }
+//                )
+//            }
+//            else -> {
+//                QuizScreen(
+//                    uiState = uiState,
+//                    onAnswerSelected = { viewModel.selectAnswer(it) },
+//                    onCheckAnswer = { viewModel.checkAnswer() },
+//                    onNext = { viewModel.nextQuestionOrLevel() }
+//                )
+//            }
+//        }
     }
 }
 
