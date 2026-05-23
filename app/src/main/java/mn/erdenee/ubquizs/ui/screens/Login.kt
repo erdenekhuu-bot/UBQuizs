@@ -1,6 +1,7 @@
 package mn.erdenee.ubquizs.ui.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,24 +38,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.profile.LoginRequest
+import mn.erdenee.ubquizs.ui.Screens
 
-@Preview(showBackground = true)
 @Composable
-fun LoginScreen(){
+fun LoginScreen(navController: NavController){
     val painter= painterResource(id=R.drawable.loginbanner)
     val description="Background main banner"
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val localStore = LocalStore(LocalContext.current)
+    val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize().background(Color.White)){
         Column(
@@ -106,10 +108,18 @@ fun LoginScreen(){
                     scope.launch {
                         runCatching { RetrofitClient.apiService.login(LoginRequest(username, password)) }
                             .onSuccess {
-                                val body=it.body()
-                                localStore.saveUserData(body!!.token, body.id as Int)
+                                if (it.isSuccessful) {
+                                    Toast.makeText(context, "Амжилттай нэвтэрлээ", Toast.LENGTH_SHORT).show()
+                                    navController.navigate(Screens.Home.route) {
+                                        popUpTo(Screens.Login.route) { inclusive = true }
+                                    }
+                                } else {
+                                    Toast.makeText(context, "Нэвтрэх нэр эсвэл нууц үг буруу", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                            .onFailure { e -> Log.d("login", "Error: ${e.message}")  }
+                            .onFailure { e ->
+                                Log.e("login", "Error: ${e.message}")
+                                Toast.makeText(context, "Сүлжээний алдаа гарлаа", Toast.LENGTH_SHORT).show()  }
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(5.dp),

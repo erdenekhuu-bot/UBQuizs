@@ -12,8 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,10 +32,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import mn.erdenee.ubquizs.ui.QuizViewModel
+import mn.erdenee.ubquizs.ui.Screens
+import mn.erdenee.ubquizs.ui.bottomNavItems
+import mn.erdenee.ubquizs.ui.screens.CategoryScreen
 import mn.erdenee.ubquizs.ui.screens.GameCompleteScreen
+import mn.erdenee.ubquizs.ui.screens.HomeScreen
+import mn.erdenee.ubquizs.ui.screens.LeaderScreen
 import mn.erdenee.ubquizs.ui.screens.LevelCompleteScreen
+import mn.erdenee.ubquizs.ui.screens.LoadingScreen
 import mn.erdenee.ubquizs.ui.screens.LoginScreen
+import mn.erdenee.ubquizs.ui.screens.ProfileScreen
 import mn.erdenee.ubquizs.ui.screens.QuizScreen
 import mn.erdenee.ubquizs.ui.theme.UBQuizsTheme
 
@@ -38,14 +56,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            UBQuizsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    QuizApp(modifier = Modifier.padding(innerPadding))
-                }
-            }
-//            Box(modifier = Modifier.fillMaxWidth().padding(16.dp)){
-//                bannerimage(painter,description,title)
+//            UBQuizsTheme {
+//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//                    QuizApp(modifier = Modifier.padding(innerPadding))
+//                }
 //            }
+            QuizApp(modifier = Modifier.padding(10.dp).background(Color.White))
         }
     }
 }
@@ -57,9 +73,58 @@ fun QuizApp(
     viewModel: QuizViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val navController= rememberNavController()
 
-    Box(modifier = modifier.fillMaxSize()) {
-        LoginScreen()
+
+    Scaffold(modifier= Modifier.fillMaxSize(),
+        bottomBar = {
+            NavigationBar(containerColor = Color.White){
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                bottomNavItems.forEach { screen ->
+                    NavigationBarItem(
+                        selected = currentRoute == screen.route,
+                        onClick = { navController.navigate(screen.route) },
+                        label = { Text(screen.route) },
+                        icon = {
+                            Icon(
+                                imageVector = screen.icon ?: Icons.Default.Star,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+        }) {
+        innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = Screens.Loading.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(route = Screens.Login.route) {
+                LoginScreen(navController = navController)
+            }
+            composable(route = Screens.Home.route) {
+                HomeScreen(navController = navController)
+            }
+            composable(route= Screens.Profile.route) {
+                ProfileScreen(navController=navController)
+            }
+            composable(route = Screens.Category.route) {
+                CategoryScreen(navController = navController)
+            }
+            composable(route = Screens.Leader.route) {
+                LeaderScreen(navController = navController)
+            }
+            composable(route= Screens.Loading.route) {
+                LoadingScreen(navController = navController)
+            }
+        }
+    }
+
+//    Box(modifier = modifier.fillMaxSize()) {
+//        LoginScreen()
 //        when {
 //            uiState.isGameComplete -> {
 //                GameCompleteScreen(
@@ -82,5 +147,5 @@ fun QuizApp(
 //                )
 //            }
 //        }
-    }
+//    }
 }
