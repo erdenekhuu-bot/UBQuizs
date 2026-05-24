@@ -3,6 +3,7 @@ package mn.erdenee.ubquizs.api
 import mn.erdenee.ubquizs.model.answer.AnswerResponse
 import mn.erdenee.ubquizs.model.category.CategoryResponse
 import mn.erdenee.ubquizs.model.history.HistoryResponse
+import mn.erdenee.ubquizs.model.level.LevelResponse
 import mn.erdenee.ubquizs.model.point.PointResponse
 import mn.erdenee.ubquizs.model.profile.LoginRequest
 import mn.erdenee.ubquizs.model.profile.ProfileResponse
@@ -37,6 +38,10 @@ interface APIService {
         @Query("page") page:Int,
         @Query("pageSize") pageSize: Int
     ): Response<PointResponse>
+
+    @GET("post/level/levelpass")
+    suspend fun getLevel(
+        @Query("profileid") profileid: Int): Response<LevelResponse>
 
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<ProfileResponse>

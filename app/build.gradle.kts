@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.devtools.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -73,4 +74,5 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(platform("com.google.firebase:firebase-bom:34.13.0"))
 }
