@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,14 +37,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
+import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.level.LevelModel
+import mn.erdenee.ubquizs.ui.Screens
+
 
 @Composable
 fun HomeScreen(navController: NavController){
     val context = LocalContext.current
     var levelList by remember { mutableStateOf<List<LevelModel>>(emptyList()) }
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit){
         runCatching {
@@ -51,7 +57,7 @@ fun HomeScreen(navController: NavController){
         }.onSuccess { response ->
             if(response.isSuccessful){
                 levelList = response.body()!!.results
-                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+
             } else {
                 Toast.makeText(context, response?.message().toString(), Toast.LENGTH_SHORT).show()
             }
@@ -59,9 +65,9 @@ fun HomeScreen(navController: NavController){
             Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
-    Box(modifier = Modifier.fillMaxSize().background(Color.White)){
+    Box(modifier = Modifier.fillMaxSize()){
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(scrollState),
+            modifier = Modifier.fillMaxSize().padding(32.dp).verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             levelList.forEach { level ->
@@ -81,17 +87,24 @@ fun HomeScreen(navController: NavController){
                         .wrapContentHeight(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp) // Хөнгөн сүүдэр
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    onClick = {
+                       scope.launch {
+                           LocalStore(context).saveCategory(level.level_id.toInt())
+                           navController.navigate(Screens.Answer.route) {
+                               popUpTo(0) { inclusive = true }
+                           }
+                       }
+                    }
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally, // Бүх зүйлийг голлуулна
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        // ОДНЫ ҮНЭЛГЭЭ (Row of Stars)
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -100,16 +113,15 @@ fun HomeScreen(navController: NavController){
                                 Icon(
                                     imageVector = Icons.Filled.Star,
                                     contentDescription = "Star",
-                                    tint = if (i <= starCount) Color(0xFFFFB300) else Color(0xFFC5CAE9), // Шар эсвэл Бүдүүн саарал өнгө
+                                    tint = if (i <= starCount) Color(0xFFFFB300) else Color(0xFFC5CAE9),
                                     modifier = Modifier.size(28.dp)
                                 )
                             }
                         }
 
-                        // ТҮВШНИЙ НЭР (Level & Title)
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                text = level.level_name.uppercase(),
+                                text = level.level_name,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF1A1A2E)
@@ -118,11 +130,10 @@ fun HomeScreen(navController: NavController){
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        // ТӨЛӨВ БАЙДЛЫН КАПСУЛ (Status Badge)
                         val isComplete = level.level_passed == 1 || percentage >= 100
-                        val badgeBgColor = if (isComplete) Color(0xFFE8F5E9) else Color(0xFFE8EAF6) // Ногоон эсвэл Цэнхэр туяа
-                        val badgeTextColor = if (isComplete) Color(0xFF2E7D32) else Color(0xFF3F51B5) // Ногоон эсвэл Цэнхэр бичиг
-                        val badgeText = if (isComplete) "100% COMPLETE" else "$percentage% SCORE"
+                        val badgeBgColor = if (isComplete) Color(0xFFE8F5E9) else Color(0xFFE8EAF6)
+                        val badgeTextColor = if (isComplete) Color(0xFF2E7D32) else Color(0xFF3F51B5)
+                        val badgeText = if (isComplete) "100%" else "$percentage%"
 
                         Box(
                             modifier = Modifier

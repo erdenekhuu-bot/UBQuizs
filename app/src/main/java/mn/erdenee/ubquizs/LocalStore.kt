@@ -14,6 +14,8 @@ class LocalStore(private val context: Context) {
         private val Context.dataStore by preferencesDataStore("profile")
         private val TOKEN_KEY = stringPreferencesKey("token")
         private val USER_ID_KEY = intPreferencesKey("id")
+
+        private val CATEGORY_ID = intPreferencesKey("category_id")
     }
 
     suspend fun saveUserData(token: String, id: Int) {
@@ -23,7 +25,15 @@ class LocalStore(private val context: Context) {
         }
     }
 
+    suspend fun saveCategory(id:Int){
+        context.dataStore.edit { prefs ->
+            prefs[CATEGORY_ID] = id
+        }
+    }
+
     val token: Flow<String?> = context.dataStore.data.map { it[TOKEN_KEY] }
 
     val userId: Flow<Int?> = context.dataStore.data.map { it[USER_ID_KEY] }
+
+    val categoryId: Flow<Int?> = context.dataStore.data.map { it[CATEGORY_ID] }
 }

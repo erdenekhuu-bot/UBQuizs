@@ -13,7 +13,8 @@ sealed class Screens(val route:String,val icon: ImageVector? = null ) {
     object Category: Screens("Category",Icons.Default.CheckCircle)
     object Leader: Screens("Leader",Icons.Default.AccountCircle)
     object Profile: Screens("Profile",Icons.Default.Person)
-    object Loading:Screens("Loading")
+    object Loading: Screens("Loading")
+    object Answer: Screens("Answer")
 }
 
 val bottomNavItems = listOf(
@@ -21,5 +22,4 @@ val bottomNavItems = listOf(
     Screens.Category,
     Screens.Leader,
     Screens.Profile,
-    Screens.Loading
 )

@@ -15,11 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,8 +31,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.FontScaling
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -40,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import mn.erdenee.ubquizs.ui.QuizViewModel
 import mn.erdenee.ubquizs.ui.Screens
 import mn.erdenee.ubquizs.ui.bottomNavItems
+import mn.erdenee.ubquizs.ui.screens.AnswerScreen
 import mn.erdenee.ubquizs.ui.screens.CategoryScreen
 import mn.erdenee.ubquizs.ui.screens.GameCompleteScreen
 import mn.erdenee.ubquizs.ui.screens.HomeScreen
@@ -66,6 +73,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun QuizApp(
@@ -76,7 +84,21 @@ fun QuizApp(
     val navController= rememberNavController()
 
 
-    Scaffold(modifier= Modifier.fillMaxSize(),
+    Scaffold(modifier= Modifier.fillMaxSize().background(Color.White),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Асуулт хариулт",
+                        style = TextStyle(
+                            color = Color(0xff2879e0),
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            )
+        },
         bottomBar = {
             NavigationBar(containerColor = Color.White){
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -119,6 +141,9 @@ fun QuizApp(
             }
             composable(route= Screens.Loading.route) {
                 LoadingScreen(navController = navController)
+            }
+            composable(route= Screens.Answer.route) {
+                AnswerScreen(navController=navController)
             }
         }
     }

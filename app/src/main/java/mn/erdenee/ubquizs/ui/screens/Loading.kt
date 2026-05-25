@@ -49,17 +49,17 @@ fun LoadingScreen(navController: NavController) {
             RetrofitClient.apiService.getCategory(1, 20)
         }.onSuccess { response ->
             if (response.isSuccessful) {
-                val data = response.body()?.results ?: emptyList()
-                if (data.isNotEmpty()) {
-                    val entities = data.map { model ->
-                        CategoryEntity(
-                            id = model.id.toInt(),
-                            name = model.name,
-                            created = model.created
-                        )
-                    }
-                    db.categoryDao().insertCategory(entities)
-                }
+//                val data = response.body()?.results ?: emptyList()
+//                if (data.isNotEmpty()) {
+//                    val entities = data.map { model ->
+//                        CategoryEntity(
+//                            id = model.id.toInt(),
+//                            name = model.name,
+//                            created = model.created
+//                        )
+//                    }
+//                    db.categoryDao().insertCategory(entities)
+//                }
                 while (progress < 1f) {
                     progress += 0.1f
                     delay(50)
