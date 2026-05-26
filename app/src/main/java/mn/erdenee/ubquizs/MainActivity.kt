@@ -149,7 +149,6 @@ fun QuizApp(
     }
 
 //    Box(modifier = modifier.fillMaxSize()) {
-//        LoginScreen()
 //        when {
 //            uiState.isGameComplete -> {
 //                GameCompleteScreen(

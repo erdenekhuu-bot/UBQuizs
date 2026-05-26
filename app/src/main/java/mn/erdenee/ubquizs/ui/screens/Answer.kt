@@ -22,9 +22,16 @@ fun AnswerScreen(navController: NavController){
     val localStore = remember { LocalStore(context) }
     val categoryId by localStore.categoryId.collectAsState(initial = null)
 
-    LaunchedEffect(categoryId) {
-        Log.d("storeread", "Current categoryId value: $categoryId")
-    }
+//    LaunchedEffect(categoryId) {
+//        Log.d("storeread", "Current categoryId value: $categoryId")
+//    }
+    Demo()
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun Demo(){
     Box(modifier = Modifier.fillMaxSize()){
         Text("Answer screen")
     }

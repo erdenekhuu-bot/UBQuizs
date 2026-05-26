@@ -21,5 +21,5 @@ val bottomNavItems = listOf(
     Screens.Home,
     Screens.Category,
     Screens.Leader,
-    Screens.Profile,
+    Screens.Profile
 )
