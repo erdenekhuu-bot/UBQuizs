@@ -14,7 +14,10 @@ sealed class Screens(val route:String,val icon: ImageVector? = null ) {
     object Leader: Screens("Leader",Icons.Default.AccountCircle)
     object Profile: Screens("Profile",Icons.Default.Person)
     object Loading: Screens("Loading")
-    object Answer: Screens("Answer")
+
+    object Quiz : Screens("Quiz/{levelId}") {
+        fun createRoute(levelId: Int) = "Quiz/$levelId"
+    }
 }
 
 val bottomNavItems = listOf(

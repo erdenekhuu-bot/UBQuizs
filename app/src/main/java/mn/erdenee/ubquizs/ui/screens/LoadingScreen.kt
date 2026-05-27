@@ -1,6 +1,5 @@
 package mn.erdenee.ubquizs.ui.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +34,6 @@ import kotlinx.coroutines.delay
 import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.data.AppData
-import mn.erdenee.ubquizs.data.CategoryEntity
 import mn.erdenee.ubquizs.ui.Screens
 
 @Composable

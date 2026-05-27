@@ -4,17 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -23,68 +17,53 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.FontScaling
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import mn.erdenee.ubquizs.ui.QuizViewModel
+import androidx.navigation.navArgument
+import mn.erdenee.ubquizs.api.RetrofitClient
+import mn.erdenee.ubquizs.factory.QuizViewModelFactory
+import mn.erdenee.ubquizs.repository.QuizRepository
 import mn.erdenee.ubquizs.ui.Screens
 import mn.erdenee.ubquizs.ui.bottomNavItems
-import mn.erdenee.ubquizs.ui.screens.AnswerScreen
 import mn.erdenee.ubquizs.ui.screens.CategoryScreen
-import mn.erdenee.ubquizs.ui.screens.GameCompleteScreen
 import mn.erdenee.ubquizs.ui.screens.HomeScreen
 import mn.erdenee.ubquizs.ui.screens.LeaderScreen
-import mn.erdenee.ubquizs.ui.screens.LevelCompleteScreen
 import mn.erdenee.ubquizs.ui.screens.LoadingScreen
 import mn.erdenee.ubquizs.ui.screens.LoginScreen
 import mn.erdenee.ubquizs.ui.screens.ProfileScreen
 import mn.erdenee.ubquizs.ui.screens.QuizScreen
-import mn.erdenee.ubquizs.ui.theme.UBQuizsTheme
+import mn.erdenee.ubquizs.viewmodel.QuizViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val apiService = RetrofitClient.apiService
+        val repository = QuizRepository(apiService)
         setContent {
-//            UBQuizsTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    QuizApp(modifier = Modifier.padding(innerPadding))
-//                }
-//            }
-            QuizApp(modifier = Modifier.padding(10.dp).background(Color.White))
+            QuizApp(repository = repository)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
 @Composable
-fun QuizApp(
-    modifier: Modifier = Modifier,
-    viewModel: QuizViewModel = viewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
+fun QuizApp(repository: QuizRepository) {
     val navController= rememberNavController()
 
-
-    Scaffold(modifier= Modifier.fillMaxSize().background(Color.White),
+    Scaffold(modifier=Modifier.padding(10.dp).background(Color.White).fillMaxSize().background(Color.White),
         topBar = {
             TopAppBar(
                 title = {
@@ -142,34 +121,24 @@ fun QuizApp(
             composable(route= Screens.Loading.route) {
                 LoadingScreen(navController = navController)
             }
-            composable(route= Screens.Answer.route) {
-                AnswerScreen(navController=navController)
+            composable(
+                route = Screens.Quiz.route,
+                arguments = listOf(navArgument("levelId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val levelId = backStackEntry.arguments?.getInt("levelId") ?: 0
+
+                val viewModel: QuizViewModel = viewModel(
+                    factory = QuizViewModelFactory(repository)
+                )
+
+                QuizScreen(
+                    navController = navController,
+                    levelId = levelId,
+                    viewModel = viewModel
+                )
             }
+
         }
     }
 
-//    Box(modifier = modifier.fillMaxSize()) {
-//        when {
-//            uiState.isGameComplete -> {
-//                GameCompleteScreen(
-//                    uiState = uiState,
-//                    onRestart = { viewModel.restartGame() }
-//                )
-//            }
-//            uiState.isLevelComplete -> {
-//                LevelCompleteScreen(
-//                    uiState = uiState,
-//                    onNextLevel = { viewModel.nextLevel() }
-//                )
-//            }
-//            else -> {
-//                QuizScreen(
-//                    uiState = uiState,
-//                    onAnswerSelected = { viewModel.selectAnswer(it) },
-//                    onCheckAnswer = { viewModel.checkAnswer() },
-//                    onNext = { viewModel.nextQuestionOrLevel() }
-//                )
-//            }
-//        }
-//    }
 }

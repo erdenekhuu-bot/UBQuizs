@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.api.RetrofitClient
-import mn.erdenee.ubquizs.model.level.LevelModel
+import mn.erdenee.ubquizs.model.LevelModel
 import mn.erdenee.ubquizs.ui.Screens
 
 
@@ -91,7 +91,8 @@ fun HomeScreen(navController: NavController){
                     onClick = {
                        scope.launch {
                            LocalStore(context).saveCategory(level.level_id.toInt())
-                           navController.navigate(Screens.Answer.route) {
+                           val routeWithId = Screens.Quiz.createRoute(level.level_id.toInt())
+                           navController.navigate(routeWithId){
                                popUpTo(0) { inclusive = true }
                            }
                        }

@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
-import mn.erdenee.ubquizs.model.profile.LoginRequest
+import mn.erdenee.ubquizs.model.LoginRequest
 import mn.erdenee.ubquizs.ui.Screens
 
 @Composable
@@ -106,7 +106,12 @@ fun LoginScreen(navController: NavController){
             ElevatedButton(
                 onClick = {
                     scope.launch {
-                        runCatching { RetrofitClient.apiService.login(LoginRequest(username, password)) }
+                        runCatching { RetrofitClient.apiService.login(
+                            LoginRequest(
+                                username,
+                                password
+                            )
+                        ) }
                             .onSuccess {
                                 if (it.isSuccessful) {
                                     Toast.makeText(context, "Амжилттай нэвтэрлээ", Toast.LENGTH_SHORT).show()
