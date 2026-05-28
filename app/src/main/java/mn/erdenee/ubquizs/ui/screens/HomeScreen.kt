@@ -13,15 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,33 +46,52 @@ import mn.erdenee.ubquizs.model.LevelModel
 import mn.erdenee.ubquizs.ui.Screens
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController){
+fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
     var levelList by remember { mutableStateOf<List<LevelModel>>(emptyList()) }
-    val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+    var isRefreshing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit){
-        runCatching {
-            RetrofitClient.apiService.getLevel(1)
-        }.onSuccess { response ->
-            if(response.isSuccessful){
-                levelList = response.body()!!.results
-
-            } else {
-                Toast.makeText(context, response?.message().toString(), Toast.LENGTH_SHORT).show()
+    fun fetchLevels() {
+        isRefreshing = true
+        scope.launch {
+            runCatching {
+                RetrofitClient.apiService.getLevel(1)
+            }.onSuccess { response ->
+                isRefreshing = false
+                if (response.isSuccessful) {
+                    levelList = response.body()?.results ?: emptyList()
+                } else {
+                    Toast.makeText(context, response.message().toString(), Toast.LENGTH_SHORT).show()
+                }
+            }.onFailure { e ->
+                isRefreshing = false
+                Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
             }
-        }.onFailure { e ->
-            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
         }
     }
-    Box(modifier = Modifier.fillMaxSize()){
-        Column(
-            modifier = Modifier.fillMaxSize().padding(32.dp).verticalScroll(scrollState),
+
+    LaunchedEffect(Unit) {
+        fetchLevels()
+    }
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { fetchLevels() },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            levelList.forEach { level ->
+            items(
+                items = levelList,
+                key = { level -> level.level_id }
+            ) { level ->
                 val earned = level.user_earned.toDouble()
                 val required = level.level_required_total.toDouble()
                 val percentage = if (required > 0) ((earned / required) * 100).toInt() else 0
@@ -89,13 +110,13 @@ fun HomeScreen(navController: NavController){
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     onClick = {
-                       scope.launch {
-                           LocalStore(context).saveCategory(level.level_id.toInt())
-                           val routeWithId = Screens.Quiz.createRoute(level.level_id.toInt())
-                           navController.navigate(routeWithId){
-                               popUpTo(0) { inclusive = true }
-                           }
-                       }
+                        scope.launch {
+                            LocalStore(context).saveCategory(level.level_id.toInt())
+                            val routeWithId = Screens.Quiz.createRoute(level.level_id.toInt())
+                            navController.navigate(routeWithId) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
                     }
                 ) {
                     Column(
@@ -114,7 +135,9 @@ fun HomeScreen(navController: NavController){
                                 Icon(
                                     imageVector = Icons.Filled.Star,
                                     contentDescription = "Star",
-                                    tint = if (i <= starCount) Color(0xFFFFB300) else Color(0xFFC5CAE9),
+                                    tint = if (i <= starCount) Color(0xFFFFB300) else Color(
+                                        0xFFC5CAE9
+                                    ),
                                     modifier = Modifier.size(28.dp)
                                 )
                             }
@@ -133,7 +156,8 @@ fun HomeScreen(navController: NavController){
 
                         val isComplete = level.level_passed == 1 || percentage >= 100
                         val badgeBgColor = if (isComplete) Color(0xFFE8F5E9) else Color(0xFFE8EAF6)
-                        val badgeTextColor = if (isComplete) Color(0xFF2E7D32) else Color(0xFF3F51B5)
+                        val badgeTextColor =
+                            if (isComplete) Color(0xFF2E7D32) else Color(0xFF3F51B5)
                         val badgeText = if (isComplete) "100%" else "$percentage%"
 
                         Box(
@@ -150,9 +174,7 @@ fun HomeScreen(navController: NavController){
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
             }
-
         }
     }
 }
