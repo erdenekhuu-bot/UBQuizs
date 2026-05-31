@@ -69,7 +69,7 @@ data class LoginRequest(
 
 data class ProfileResponse(
     val token:String,
-    val id:Number
+    val id:Int
 )
 
 data class Level(

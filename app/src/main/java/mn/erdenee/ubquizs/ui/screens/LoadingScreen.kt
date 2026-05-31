@@ -63,7 +63,7 @@ fun LoadingScreen(navController: NavController) {
                     delay(50)
                 }
 
-                navController.navigate(Screens.Home.route) {
+                navController.navigate(Screens.Login.route) {
                     popUpTo(0) { inclusive = true }
                 }
             } else {

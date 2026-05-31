@@ -45,7 +45,6 @@ import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.LevelModel
 import mn.erdenee.ubquizs.ui.Screens
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {

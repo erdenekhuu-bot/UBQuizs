@@ -47,7 +47,6 @@ import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.LoginRequest
 import mn.erdenee.ubquizs.ui.Screens
-
 @Composable
 fun LoginScreen(navController: NavController){
     val painter= painterResource(id=R.drawable.loginbanner)
@@ -55,8 +54,8 @@ fun LoginScreen(navController: NavController){
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-    val localStore = LocalStore(LocalContext.current)
     val context = LocalContext.current
+
 
     Box(modifier = Modifier.fillMaxSize().background(Color.White)){
         Column(
@@ -112,14 +111,21 @@ fun LoginScreen(navController: NavController){
                                 password
                             )
                         ) }
-                            .onSuccess {
-                                if (it.isSuccessful) {
-                                    Toast.makeText(context, "Амжилттай нэвтэрлээ", Toast.LENGTH_SHORT).show()
+                            .onSuccess { response ->
+                                if (response.isSuccessful) {
+                                    val body = response.body()
+                                    LocalStore(context).saveUserData(body?.token.toString(), body?.id as Int)
                                     navController.navigate(Screens.Home.route) {
-                                        popUpTo(Screens.Login.route) { inclusive = true }
+                                        popUpTo(Screens.Login.route) {
+                                            inclusive = true
+                                        }
                                     }
                                 } else {
-                                    Toast.makeText(context, "Нэвтрэх нэр эсвэл нууц үг буруу", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Нэр эсвэл нууц үг буруу байна.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                             .onFailure { e ->
