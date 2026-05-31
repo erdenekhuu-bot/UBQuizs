@@ -3,7 +3,6 @@ package mn.erdenee.ubquizs.ui.screens
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,11 +27,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,15 +40,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.model.AnswerModel
+import mn.erdenee.ubquizs.ui.Screens
 import mn.erdenee.ubquizs.viewmodel.QuizViewModel
 @Composable
 fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewModel){
+    val context = LocalContext.current
     val categories by viewModel.categories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     var selectedAnswer by remember { mutableStateOf<AnswerModel?>(null) }
     val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
     val score by viewModel.score.collectAsState()
+    val localStore = remember { LocalStore(context.applicationContext) }
+    val userId by localStore.userId.collectAsState(initial = null)
 
     LaunchedEffect(levelId) {
         viewModel.loadQuestions(levelId)
@@ -100,7 +104,9 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(onClick = {
-                    navController.popBackStack()
+                    navController.navigate(Screens.Home.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
                 }) {
                     Text("Буцах")
                 }
@@ -195,8 +201,15 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
 
                             CoroutineScope(Dispatchers.Main).launch {
                                 delay(500)
+//                                selectedAnswer = answer
 
-                                viewModel.checkAnswer(answer.is_correct)
+                                viewModel.checkoutAnswer(
+                                    total = answer.total,
+                                    answer_id = answer.id,
+                                    profile_id = userId,
+                                    question_id = answer.question_id,
+                                    level_id = answer.level_id
+                                )
 
                                 selectedAnswer = null
                             }

@@ -1,5 +1,7 @@
 package mn.erdenee.ubquizs.api
 
+import mn.erdenee.ubquizs.model.AnswerCheck
+import mn.erdenee.ubquizs.model.AnswerCheckResponse
 import mn.erdenee.ubquizs.model.AnswerResponse
 import mn.erdenee.ubquizs.model.CategoryResponse
 import mn.erdenee.ubquizs.model.HistoryResponse
@@ -48,4 +50,9 @@ interface APIService {
 
     @POST("login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<ProfileResponse>
+
+    @POST("post/answer")
+    suspend fun getCheckAnswer(
+        @Body answerCheck: AnswerCheck
+    ): Response<AnswerCheck>
 }

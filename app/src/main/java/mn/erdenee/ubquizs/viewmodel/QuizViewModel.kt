@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import mn.erdenee.ubquizs.model.AnswerCheck
 import mn.erdenee.ubquizs.model.Category
 import mn.erdenee.ubquizs.repository.QuizRepository
 
@@ -42,12 +43,45 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
     private val _currentQuestionIndex = MutableStateFlow(0)
     val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
 
-    fun checkAnswer(isCorrect: Int) {
-        if (isCorrect==1) {
-            _score.value += 10
+    fun checkoutAnswer(
+        total: Int,
+        answer_id: Int,
+        profile_id: Int?,
+        question_id: Int,
+        level_id: Int
+    ) {
+        viewModelScope.launch {
+            runCatching {
+                val request = AnswerCheck(
+                    profile_id = profile_id,
+                    question_id = question_id,
+                    answer_id = answer_id,
+                    level_id = level_id,
+                    total = total
+                )
+
+                quizRepository.getCheckoutAnswer(request)
+
+            }.onSuccess { response ->
+                if (response.isSuccessful) {
+                    _score.value += total
+                    _currentQuestionIndex.value += 1
+                } else {
+                    _currentQuestionIndex.value += 1
+                }
+            }.onFailure { e ->
+                Log.d("viewmodel", "failed to check answer: ${e.message}")
+            }
         }
-        _currentQuestionIndex.value += 1
     }
+
+
+//    fun checkAnswer(isCorrect: Int) {
+//        if (isCorrect==1) {
+//            _score.value += 10
+//        }
+//        _currentQuestionIndex.value += 1
+//    }
 
     fun decreaseLife() {
         if (_lives.value > 0) {

@@ -100,5 +100,21 @@ data class Question(
 data class Answer(
     val id: Int,
     val text: String,
-    val is_correct: Int
+    val total:Int,
+    val question_id:Int,
+    val is_correct: Int,
+    val level_id:Int,
+)
+
+data class AnswerCheck(
+    val profile_id: Int?,
+    val question_id: Int,
+    val answer_id: Int,
+    val level_id: Int,
+    val total: Int
+)
+
+data class AnswerCheckResponse(
+    val id:Int,
+    val history:Int
 )
