@@ -74,6 +74,8 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
     if (questions.isEmpty()) {
         return
     }
+
+    //end show up score
     if (currentQuestionIndex >= questions.size) {
         Box(
             modifier = Modifier
