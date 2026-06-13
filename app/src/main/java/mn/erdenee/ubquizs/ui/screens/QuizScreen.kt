@@ -197,12 +197,9 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                         onClick = {
-                            Log.d("answer",answer.is_correct.toString())
-
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(500)
-//                                selectedAnswer = answer
-
+                                Log.d("correct", answer.total.toString())
+                                delay(100)
                                 viewModel.checkoutAnswer(
                                     total = answer.total,
                                     answer_id = answer.id,
@@ -210,7 +207,6 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                                     question_id = answer.question_id,
                                     level_id = answer.level_id
                                 )
-
                                 selectedAnswer = null
                             }
                         }

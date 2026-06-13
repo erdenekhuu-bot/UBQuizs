@@ -39,12 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.LevelModel
 import mn.erdenee.ubquizs.ui.Screens
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -57,7 +57,8 @@ fun HomeScreen(navController: NavController) {
         isRefreshing = true
         scope.launch {
             runCatching {
-                RetrofitClient.apiService.getLevel(1)
+                val profileid = LocalStore(context).userId.first()
+                RetrofitClient.apiService(context).getLevel(profileid)
             }.onSuccess { response ->
                 isRefreshing = false
                 if (response.isSuccessful) {
@@ -91,7 +92,7 @@ fun HomeScreen(navController: NavController) {
                 items = levelList,
                 key = { level -> level.level_id }
             ) { level ->
-                val earned = level.user_earned.toDouble()
+                val earned = level.earned.toDouble()
                 val required = level.level_required_total.toDouble()
                 val percentage = if (required > 0) ((earned / required) * 100).toInt() else 0
                 val starCount = when {
@@ -153,7 +154,7 @@ fun HomeScreen(navController: NavController) {
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        val isComplete = level.level_passed == 1 || percentage >= 100
+                        val isComplete = level.passed == 1 || percentage >= 100
                         val badgeBgColor = if (isComplete) Color(0xFFE8F5E9) else Color(0xFFE8EAF6)
                         val badgeTextColor =
                             if (isComplete) Color(0xFF2E7D32) else Color(0xFF3F51B5)

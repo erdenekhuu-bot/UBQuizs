@@ -37,12 +37,11 @@ data class HistoryResponse(
 
 
 data class LevelModel(
-    val profile_id:Number,
     val level_id: Number,
     val level_name: String,
     val level_required_total: Int,
-    val user_earned: Number,
-    val level_passed: Int
+    val earned: Number,
+    val passed: Int
 )
 
 data class LevelResponse(
@@ -69,7 +68,8 @@ data class LoginRequest(
 
 data class ProfileResponse(
     val token:String,
-    val id:Int
+    val id:Int,
+    val username: String
 )
 
 data class Level(

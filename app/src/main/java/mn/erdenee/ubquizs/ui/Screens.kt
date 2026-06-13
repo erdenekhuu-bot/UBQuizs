@@ -10,8 +10,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class Screens(val route:String,val icon: ImageVector? = null ) {
     object Home: Screens("Нүүр", Icons.Default.Home)
     object Login: Screens("Login")
-    object Category: Screens("Ангилалууд",Icons.Default.CheckCircle)
-    object Leader: Screens("Оролцогчид",Icons.Default.AccountCircle)
+    object Category: Screens("Ангилал",Icons.Default.CheckCircle)
+    object Leader: Screens("Оролцогч",Icons.Default.AccountCircle)
     object Profile: Screens("Профайл",Icons.Default.Person)
     object Loading: Screens("Loading")
     object Quiz : Screens("Quiz/{levelId}") {

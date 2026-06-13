@@ -1,7 +1,6 @@
 package mn.erdenee.ubquizs.api
 
 import mn.erdenee.ubquizs.model.AnswerCheck
-import mn.erdenee.ubquizs.model.AnswerCheckResponse
 import mn.erdenee.ubquizs.model.AnswerResponse
 import mn.erdenee.ubquizs.model.CategoryResponse
 import mn.erdenee.ubquizs.model.HistoryResponse
@@ -16,7 +15,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 interface APIService {
-    @GET("post/category")
+    @GET("android/category")
     suspend fun getCategory(
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
@@ -39,16 +38,17 @@ interface APIService {
         @Query("page") page:Int,
         @Query("pageSize") pageSize: Int
     ): Response<PointResponse>
-    @GET("post/level/levelpass")
+    @GET("android/level/levelpass")
     suspend fun getLevel(
-        @Query("profileid") profileid: Int): Response<LevelResponse>
+        @Query("profileid") profileid: Int?
+    ): Response<LevelResponse>
 
-    @GET("post/level/question")
+    @GET("android/level/question")
     suspend fun getQuestionsByLevel(
         @Query("level") level:Int
     ): Response<QuizResponse>
 
-    @POST("login")
+    @POST("auth/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<ProfileResponse>
 
     @POST("post/answer")

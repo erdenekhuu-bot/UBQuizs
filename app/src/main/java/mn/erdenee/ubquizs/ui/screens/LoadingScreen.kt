@@ -43,35 +43,43 @@ fun LoadingScreen(navController: NavController) {
     val db = AppData.getDatabase(context)
 
     LaunchedEffect(Unit) {
-        runCatching {
-            RetrofitClient.apiService.getCategory(1, 20)
-        }.onSuccess { response ->
-            if (response.isSuccessful) {
-//                val data = response.body()?.results ?: emptyList()
-//                if (data.isNotEmpty()) {
-//                    val entities = data.map { model ->
-//                        CategoryEntity(
-//                            id = model.id.toInt(),
-//                            name = model.name,
-//                            created = model.created
-//                        )
-//                    }
-//                    db.categoryDao().insertCategory(entities)
-//                }
-                while (progress < 1f) {
-                    progress += 0.1f
-                    delay(50)
-                }
-
-                navController.navigate(Screens.Login.route) {
-                    popUpTo(0) { inclusive = true }
-                }
-            } else {
-                Toast.makeText(context, response?.message().toString(), Toast.LENGTH_SHORT).show()
-            }
-        }.onFailure { e ->
-            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+        while (progress < 1f) {
+            progress += 0.1f
+            delay(50)
         }
+
+        navController.navigate(Screens.Login.route) {
+            popUpTo(0) { inclusive = true }
+        }
+//        runCatching {
+//            RetrofitClient.apiService(context).getCategory(1, 20)
+//        }.onSuccess { response ->
+//            if (response.isSuccessful) {
+////                val data = response.body()?.results ?: emptyList()
+////                if (data.isNotEmpty()) {
+////                    val entities = data.map { model ->
+////                        CategoryEntity(
+////                            id = model.id.toInt(),
+////                            name = model.name,
+////                            created = model.created
+////                        )
+////                    }
+////                    db.categoryDao().insertCategory(entities)
+////                }
+//                while (progress < 1f) {
+//                    progress += 0.1f
+//                    delay(50)
+//                }
+//
+//                navController.navigate(Screens.Login.route) {
+//                    popUpTo(0) { inclusive = true }
+//                }
+//            } else {
+//                Toast.makeText(context, response?.message().toString(), Toast.LENGTH_SHORT).show()
+//            }
+//        }.onFailure { e ->
+//            Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
+//        }
     }
 
     LoadingUI(progress)

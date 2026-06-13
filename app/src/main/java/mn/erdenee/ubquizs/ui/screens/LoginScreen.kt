@@ -98,14 +98,13 @@ fun LoginScreen(navController: NavController){
                 label = { Text("Нууц үг") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password Icon") },
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
             )
             Spacer(modifier = Modifier.height(30.dp))
             ElevatedButton(
                 onClick = {
                     scope.launch {
-                        runCatching { RetrofitClient.apiService.login(
+                        runCatching { RetrofitClient.apiService(context).login(
                             LoginRequest(
                                 username,
                                 password
@@ -114,7 +113,7 @@ fun LoginScreen(navController: NavController){
                             .onSuccess { response ->
                                 if (response.isSuccessful) {
                                     val body = response.body()
-                                    LocalStore(context).saveUserData(body?.token.toString(), body?.id as Int)
+                                    LocalStore(context).saveUserData(body?.token.toString(), body?.id as Int, body?.username.toString())
                                     navController.navigate(Screens.Home.route) {
                                         popUpTo(Screens.Login.route) {
                                             inclusive = true
