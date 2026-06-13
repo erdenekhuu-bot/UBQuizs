@@ -9,10 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface DAO {
     @Upsert
     suspend fun insertCategory(categories: List<CategoryEntity>)
-
     @Query("SELECT * FROM categories ORDER BY id ASC")
     fun getAllCategories(): Flow<List<CategoryEntity>>
-
     @Query("DELETE FROM categories")
     suspend fun clearAll()
 }

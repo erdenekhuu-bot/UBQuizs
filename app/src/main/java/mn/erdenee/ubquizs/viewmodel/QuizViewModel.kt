@@ -75,14 +75,6 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
         }
     }
 
-
-//    fun checkAnswer(isCorrect: Int) {
-//        if (isCorrect==1) {
-//            _score.value += 10
-//        }
-//        _currentQuestionIndex.value += 1
-//    }
-
     fun decreaseLife() {
         if (_lives.value > 0) {
             _lives.value -= 1
