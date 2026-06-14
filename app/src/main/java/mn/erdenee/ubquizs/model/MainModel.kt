@@ -118,3 +118,11 @@ data class AnswerCheckResponse(
     val id:Int,
     val history:Int
 )
+
+data class ResponseAnswer(
+    val success:Int,
+    val is_correct:Int,
+    val earned_point:Int,
+    val level_unlocked:Int,
+    val already_solved:Int
+)

@@ -41,7 +41,6 @@ import mn.erdenee.ubquizs.ui.Screens
 import mn.erdenee.ubquizs.ui.bottomNavItems
 import mn.erdenee.ubquizs.ui.screens.CategoryScreen
 import mn.erdenee.ubquizs.ui.screens.HomeScreen
-import mn.erdenee.ubquizs.ui.screens.LeaderScreen
 import mn.erdenee.ubquizs.ui.screens.LoadingScreen
 import mn.erdenee.ubquizs.ui.screens.LoginScreen
 import mn.erdenee.ubquizs.ui.screens.ProfileScreen
@@ -131,9 +130,6 @@ fun QuizApp(repository: QuizRepository) {
             }
             composable(route = Screens.Category.route) {
                 CategoryScreen()
-            }
-            composable(route = Screens.Leader.route) {
-                LeaderScreen()
             }
             composable(route= Screens.Loading.route) {
                 LoadingScreen(navController = navController)

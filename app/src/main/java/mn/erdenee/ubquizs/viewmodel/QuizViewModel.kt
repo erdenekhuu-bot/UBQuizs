@@ -64,7 +64,10 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
 
             }.onSuccess { response ->
                 if (response.isSuccessful) {
-                    _score.value += total
+                    val checkout=response?.body()
+                    if(checkout?.is_correct==1){
+                        _score.value += total
+                    }
                     _currentQuestionIndex.value += 1
                 } else {
                     _currentQuestionIndex.value += 1

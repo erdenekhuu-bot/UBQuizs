@@ -1,6 +1,5 @@
 package mn.erdenee.ubquizs.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -198,7 +197,6 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                Log.d("correct", answer.total.toString())
                                 delay(100)
                                 viewModel.checkoutAnswer(
                                     total = answer.total,
