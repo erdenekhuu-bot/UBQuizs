@@ -46,7 +46,6 @@ object RetrofitClient {
         return retrofit!!
     }
 
-    // MainActivity-ээс дуудагдах функц
     fun apiService(context: Context): APIService {
         return getClient(context).create(APIService::class.java)
     }
