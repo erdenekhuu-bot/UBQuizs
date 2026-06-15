@@ -10,8 +10,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-//    private const val BASE_URL = "https://quizgame.hydra2medusa.workers.dev/api/"
-    private const val BASE_URL = "http://192.168.6.144:3000/api/"
+    private const val BASE_URL = "https://quizgame.hydra2medusa.workers.dev/api/"
+    //private const val BASE_URL = "http://192.168.6.144:3000/api/"
     private var retrofit: Retrofit? = null
 
     private fun getClient(context: Context): Retrofit {
