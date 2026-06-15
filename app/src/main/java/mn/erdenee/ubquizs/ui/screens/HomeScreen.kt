@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -81,7 +82,7 @@ fun HomeScreen(navController: NavController) {
         onRefresh = { fetchLevels() },
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color(0xFFF8FAFF))
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -108,6 +109,7 @@ fun HomeScreen(navController: NavController) {
                         .wrapContentHeight(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
+
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     onClick = {
                         scope.launch {
@@ -164,13 +166,18 @@ fun HomeScreen(navController: NavController) {
                             modifier = Modifier
                                 .background(color = badgeBgColor, shape = RoundedCornerShape(50.dp))
                                 .padding(horizontal = 16.dp, vertical = 6.dp)
-                        ) {
+
+                        ) {Surface(
+                            color = Color(0xFFEDF2FF),
+                            shape = RoundedCornerShape(4.dp)
+                        ){
                             Text(
                                 text = badgeText,
                                 color = badgeTextColor,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
+                        }
                         }
                     }
                 }

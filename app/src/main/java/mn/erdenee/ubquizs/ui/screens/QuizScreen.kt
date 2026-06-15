@@ -53,6 +53,16 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
     val score by viewModel.score.collectAsState()
     val localStore = remember { LocalStore(context.applicationContext) }
     val userId by localStore.userId.collectAsState(initial = null)
+    val lives by viewModel.lives.collectAsState()
+    val remainingSeconds by viewModel.remainingSeconds.collectAsState()
+    val minutes = remainingSeconds / 60
+    val seconds = remainingSeconds % 60
+
+    val formattedTime = String.format(
+        "%02d:%02d",
+        minutes,
+        seconds
+    )
 
     LaunchedEffect(levelId) {
         viewModel.loadQuestions(levelId)
@@ -74,7 +84,51 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
         return
     }
 
+
     if (questions.isEmpty()) {
+        return
+    }
+
+    if (lives <= 0) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Баяр хүргэе",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Blue
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Таны оноо: $score",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = {
+                        navController.navigate(Screens.Home.route) {
+                            popUpTo(0) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                ) {
+                    Text("Буцах")
+                }
+            }
+        }
         return
     }
 
@@ -88,7 +142,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Тоглоом дууслаа",
+                    text = "Баяр хүргэя",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -113,6 +167,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
         }
         return
     }
+
     val currentCategory = questions[currentQuestionIndex].first
     val currentQuestion = questions[currentQuestionIndex].second
 
@@ -121,12 +176,38 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Асуулт ${currentQuestionIndex + 1}/${questions.size}",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Асуулт ${currentQuestionIndex + 1}/${questions.size}",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray,
+                modifier = Modifier.weight(1f)
+            )
+
+            Text(
+                text = "⏱ $formattedTime",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (remainingSeconds <= 10) {
+                    Color.Red
+                } else {
+                    Color(0xFF2879E0)
+                }
+            )
+
+            Spacer(modifier = Modifier.size(12.dp))
+
+            Text(
+                text = "❤️ $lives",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Red
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -197,7 +278,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(100)
+                                delay(50)
                                 viewModel.checkoutAnswer(
                                     total = answer.total,
                                     answer_id = answer.id,

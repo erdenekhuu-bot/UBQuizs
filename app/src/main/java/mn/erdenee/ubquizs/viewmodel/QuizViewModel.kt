@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.model.AnswerCheck
 import mn.erdenee.ubquizs.model.Category
 import mn.erdenee.ubquizs.repository.QuizRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
@@ -18,25 +20,12 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
     val isLoading = _isLoading.asStateFlow()
 
     private val _lives = MutableStateFlow(3)
-    val lives = _lives.asStateFlow()
-    fun loadQuestions(levelId: Int) {
-        viewModelScope.launch {
-            runCatching {
-                _isLoading.value = true
-                quizRepository.getQuizData(levelId)
-            }.onSuccess {
-                if (it.isSuccessful) {
-                    val quizResult = it.body()?.result?.firstOrNull()
-                    _categories.value = quizResult?.categories ?: emptyList()
-                }
-                _isLoading.value = false
-            }.onFailure {
-                e->
-                Log.d("viewmodel","failed to load questions: ${e.message}")
-                _isLoading.value = false
-            }
-        }
-    }
+    val lives: StateFlow<Int> = _lives.asStateFlow()
+
+    private val _remainingSeconds = MutableStateFlow(60)
+    val remainingSeconds: StateFlow<Int> = _remainingSeconds.asStateFlow()
+
+    private var timerJob: Job? = null
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score.asStateFlow()
 
@@ -64,18 +53,41 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
 
             }.onSuccess { response ->
                 if (response.isSuccessful) {
-                    val checkout=response?.body()
-                    if(checkout?.is_correct==1){
+                    val checkout = response.body()
+
+                    if (checkout?.is_correct == 1) {
                         _score.value += total
+                    } else {
+                        decreaseLife()
                     }
-                    _currentQuestionIndex.value += 1
-                } else {
-                    _currentQuestionIndex.value += 1
+
+                    if (!isGameOver()) {
+                        _currentQuestionIndex.value += 1
+                    }
                 }
             }.onFailure { e ->
-                Log.d("viewmodel", "failed to check answer: ${e.message}")
+                Log.d(
+                    "viewmodel",
+                    "failed to check answer: ${e.message}"
+                )
             }
         }
+    }
+
+    private fun startTimer() {
+        timerJob?.cancel()
+
+        timerJob = viewModelScope.launch {
+            while (_remainingSeconds.value > 0) {
+                delay(1000)
+                _remainingSeconds.value -= 1
+            }
+            _lives.value = 0
+        }
+    }
+
+    private fun stopTimer() {
+        timerJob?.cancel()
     }
 
     fun decreaseLife() {
@@ -87,4 +99,44 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
     fun isGameOver(): Boolean {
         return _lives.value <= 0
     }
+
+    fun loadQuestions(levelId: Int) {
+        viewModelScope.launch {
+            timerJob?.cancel()
+
+            _score.value = 0
+            _lives.value = 3
+            _currentQuestionIndex.value = 0
+            _remainingSeconds.value = 60
+            _categories.value = emptyList()
+
+            runCatching {
+                _isLoading.value = true
+                quizRepository.getQuizData(levelId)
+            }.onSuccess { response ->
+                if (response.isSuccessful) {
+                    val quizResult = response.body()?.result?.firstOrNull()
+                    _categories.value = quizResult?.categories ?: emptyList()
+
+                    if (_categories.value.isNotEmpty()) {
+                        startTimer()
+                    }
+                }
+
+                _isLoading.value = false
+            }.onFailure { e ->
+                Log.d(
+                    "viewmodel",
+                    "failed to load questions: ${e.message}"
+                )
+                _isLoading.value = false
+            }
+        }
+    }
+
+    override fun onCleared() {
+        timerJob?.cancel()
+        super.onCleared()
+    }
 }
+

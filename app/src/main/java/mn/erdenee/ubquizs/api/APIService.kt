@@ -28,12 +28,6 @@ interface APIService {
         @Query("pageSize") pageSize: Int
     ): Response<AnswerResponse>
 
-    @GET("post/history")
-    suspend fun getHistory(
-        @Query("page") page:Int,
-        @Query("pageSize") pageSize: Int
-    ): Response<HistoryResponse>
-
     @GET("post/point")
     suspend fun getPoint(
         @Query("page") page:Int,
@@ -56,4 +50,7 @@ interface APIService {
     suspend fun getCheckAnswer(
         @Body answerCheck: AnswerCheck
     ): Response<Answer>
+
+    @GET("android/history")
+    suspend fun getHistory(@Query("profile") profile: Int?): Response<HistoryResponse>
 }

@@ -35,9 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import mn.erdenee.ubquizs.LocalStore
 import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.CategoryModel
@@ -88,7 +86,7 @@ fun CategoryScreen(){
         onRefresh = { fetchCategory() },
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color(0xFFF8FAFF))
     ) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 100.dp),

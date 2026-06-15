@@ -2,10 +2,10 @@ package mn.erdenee.ubquizs.model
 
 import com.google.gson.annotations.SerializedName
 data class AnswerModel(
-    val id: Number,
+    val id: Int,
     val answer_text: String,
     val is_correct: Boolean,
-    val question_id: Number
+    val question_id: Int
 )
 
 data class AnswerResponse(
@@ -14,7 +14,7 @@ data class AnswerResponse(
 )
 
 data class CategoryModel(
-    val id: Number,
+    val id: Int,
     val name: String,
     val created: String
 )
@@ -24,23 +24,30 @@ data class CategoryResponse(
     val results: MutableList<CategoryModel>
 )
 
-data class HistoryModel(
-    val id: Number,
-    val profile: Number,
-    val question_id: Number
-)
+
 
 data class HistoryResponse(
-    @SerializedName("results")
-    val results: MutableList<HistoryModel>
+    @SerializedName("data")
+    val data: HistoryData
 )
 
-
+data class HistoryData(
+    val total_point: Int,
+    val all_points:Int,
+    val history: List<HistoryModel>
+)
+data class HistoryModel(
+    val question_point: Int,
+    val category_name: String,
+    val attempts_count: Int,
+    val level_name: String,
+    val level_total: Int
+)
 data class LevelModel(
-    val level_id: Number,
+    val level_id: Int,
     val level_name: String,
     val level_required_total: Int,
-    val earned: Number,
+    val earned: Int,
     val passed: Int
 )
 
@@ -51,9 +58,9 @@ data class LevelResponse(
 
 
 data class PointModel (
-    val id: Number,
-    val total: Number,
-    val profile_id: Number
+    val id: Int,
+    val total: Int,
+    val profile_id: Int
 )
 
 data class PointResponse(
@@ -72,10 +79,6 @@ data class ProfileResponse(
     val username: String
 )
 
-data class Level(
-    val levelNumber: Int,
-    val questions: List<Question>
-)
 data class Category(
     val category_id: Int,
     val category_name: String,
@@ -112,17 +115,4 @@ data class AnswerCheck(
     val answer_id: Int,
     val level_id: Int,
     val total: Int
-)
-
-data class AnswerCheckResponse(
-    val id:Int,
-    val history:Int
-)
-
-data class ResponseAnswer(
-    val success:Int,
-    val is_correct:Int,
-    val earned_point:Int,
-    val level_unlocked:Int,
-    val already_solved:Int
 )
