@@ -1,5 +1,6 @@
 package mn.erdenee.ubquizs.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,9 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +52,6 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
     val context = LocalContext.current
     val categories by viewModel.categories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    var selectedAnswer by remember { mutableStateOf<AnswerModel?>(null) }
     val currentQuestionIndex by viewModel.currentQuestionIndex.collectAsState()
     val score by viewModel.score.collectAsState()
     val localStore = remember { LocalStore(context.applicationContext) }
@@ -57,6 +60,8 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
     val remainingSeconds by viewModel.remainingSeconds.collectAsState()
     val minutes = remainingSeconds / 60
     val seconds = remainingSeconds % 60
+    val totalScore by viewModel.totalScore.collectAsState()
+    var selectedAnswer by remember { mutableStateOf<AnswerModel?>(null) }
 
     val formattedTime = String.format(
         "%02d:%02d",
@@ -100,23 +105,24 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Баяр хүргэе",
+                    text = "3 оролдлого дууслаа",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Blue
                 )
-
                 Spacer(modifier = Modifier.height(12.dp))
-
                 Text(
-                    text = "Таны оноо: $score",
+                    text = "Таны оноо: ${score}/${totalScore}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
+                Spacer(modifier = Modifier.height(15.dp))
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
+                ElevatedButton(
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color(0xFF1A24E8),
+                        contentColor = Color.White
+                    ),
                     onClick = {
                         navController.navigate(Screens.Home.route) {
                             popUpTo(0) {
@@ -144,19 +150,25 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                 Text(
                     text = "Баяр хүргэя",
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Blue
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Оноо: $score",
+                    text = "Оноо: ${score}/${totalScore}",
                     fontSize = 20.sp
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Button(onClick = {
+                ElevatedButton(
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = Color(0xFF1A24E8),
+                        contentColor = Color.White
+                    ),
+                    onClick = {
                     navController.navigate(Screens.Home.route) {
                         popUpTo(0) { inclusive = true }
                     }
@@ -253,18 +265,6 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                     val isSelected = selectedAnswer == answer
                     val optionLetter = ('A' + index).toString()
 
-                    val borderColor =
-                        if (isSelected) Color(0xFF0043CE) else Color.Transparent
-
-                    val letterBgColor =
-                        if (isSelected) Color(0xFF0043CE) else Color(0xFFE2E8F0)
-
-                    val letterTextColor =
-                        if (isSelected) Color.White else Color(0xFF1E293B)
-
-                    val answerTextColor =
-                        if (isSelected) Color(0xFF0043CE) else Color(0xFF1E293B)
-
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -272,7 +272,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(
                             width = if (isSelected) 2.dp else 0.dp,
-                            color = borderColor
+                            color = if (isSelected) Color(0xFF0043CE) else Color.Transparent
                         ),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
@@ -300,7 +300,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                                 modifier = Modifier
                                     .size(36.dp)
                                     .background(
-                                        letterBgColor,
+                                        if (isSelected) Color(0xFF0043CE) else Color(0xFFE2E8F0),
                                         shape = RoundedCornerShape(8.dp)
                                     ),
                                 contentAlignment = Alignment.Center
@@ -309,7 +309,7 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                                     text = optionLetter,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
-                                    color = letterTextColor
+                                    color = if (isSelected) Color.White else Color(0xFF1E293B)
                                 )
                             }
 
@@ -321,20 +321,11 @@ fun QuizScreen(navController: NavController, levelId: Int, viewModel: QuizViewMo
                                 } else {
                                     FontWeight.Normal
                                 },
-                                color = answerTextColor,
+                                color = if (isSelected) Color(0xFF0043CE) else Color(0xFF1E293B),
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 16.dp)
                             )
-
-                            if (isSelected) {
-                                Icon(
-                                    imageVector = Icons.Filled.CheckCircle,
-                                    contentDescription = "Selected",
-                                    tint = Color(0xFF0043CE),
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
                         }
                     }
                 }

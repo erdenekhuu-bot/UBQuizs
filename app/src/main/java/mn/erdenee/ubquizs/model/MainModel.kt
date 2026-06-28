@@ -8,24 +8,15 @@ data class AnswerModel(
     val question_id: Int
 )
 
-data class AnswerResponse(
-    @SerializedName("results")
-    val result: MutableList<AnswerModel>
-)
-
 data class CategoryModel(
     val id: Int,
     val name: String,
     val created: String
 )
-
 data class CategoryResponse(
     @SerializedName("results")
     val results: MutableList<CategoryModel>
 )
-
-
-
 data class HistoryResponse(
     @SerializedName("data")
     val data: HistoryData

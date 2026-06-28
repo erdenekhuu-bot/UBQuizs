@@ -108,7 +108,6 @@ fun LoadingUI(progress: Float){
             Text("Уншиж байна... ${(progress * 100).toInt()}%")
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Loading Bar (Flutter-ийн LinearProgressIndicator шиг)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -118,7 +117,7 @@ fun LoadingUI(progress: Float){
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(progress) // Хувиар өргөнийг нь тохируулна
+                        .fillMaxWidth(progress)
                         .fillMaxHeight()
                         .background(Color.Blue)
                 )

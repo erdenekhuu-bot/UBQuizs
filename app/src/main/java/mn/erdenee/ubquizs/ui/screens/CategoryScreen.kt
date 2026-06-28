@@ -39,24 +39,17 @@ import kotlinx.coroutines.launch
 import mn.erdenee.ubquizs.R
 import mn.erdenee.ubquizs.api.RetrofitClient
 import mn.erdenee.ubquizs.model.CategoryModel
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(){
-    //    val db = AppData.getDatabase(context)
-//    val categories by db.categoryDao().getAllCategories().collectAsState(initial = emptyList())
-//    LazyColumn {
-//        items(categories) { category ->
-//            Text(text = "Нэр: ${category.name}", modifier = Modifier.padding(8.dp))
-//        }
-//    }
-
     val context = LocalContext.current
     var categoryList by remember { mutableStateOf<List<CategoryModel>>(emptyList()) }
     val painter = painterResource(id = R.drawable.categoryicon)
     val description = "Category icon"
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+//    val db = AppData.getDatabase(context)
+//    val categories by db.categoryDao().getAllCategories().collectAsState(initial = emptyList())
 
     fun fetchCategory(){
         isRefreshing = true

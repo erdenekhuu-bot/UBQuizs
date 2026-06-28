@@ -2,7 +2,6 @@ package mn.erdenee.ubquizs.api
 
 import mn.erdenee.ubquizs.model.Answer
 import mn.erdenee.ubquizs.model.AnswerCheck
-import mn.erdenee.ubquizs.model.AnswerResponse
 import mn.erdenee.ubquizs.model.CategoryResponse
 import mn.erdenee.ubquizs.model.HistoryResponse
 import mn.erdenee.ubquizs.model.LevelResponse
@@ -21,12 +20,6 @@ interface APIService {
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ): Response<CategoryResponse>
-
-    @GET("post/answer")
-    suspend fun getAnswer(
-        @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int
-    ): Response<AnswerResponse>
 
     @GET("post/point")
     suspend fun getPoint(

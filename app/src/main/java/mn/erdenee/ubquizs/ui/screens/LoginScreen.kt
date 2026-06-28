@@ -128,7 +128,6 @@ fun LoginScreen(navController: NavController){
                                 }
                             }
                             .onFailure { e ->
-                                Log.e("login", "Error: ${e.message}")
                                 Toast.makeText(context, "Сүлжээний алдаа гарлаа", Toast.LENGTH_SHORT).show()  }
                     }
                 },

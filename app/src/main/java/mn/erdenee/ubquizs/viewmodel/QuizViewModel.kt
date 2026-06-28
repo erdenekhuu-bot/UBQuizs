@@ -1,6 +1,7 @@
 package mn.erdenee.ubquizs.viewmodel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,19 +19,19 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
-
     private val _lives = MutableStateFlow(3)
     val lives: StateFlow<Int> = _lives.asStateFlow()
 
     private val _remainingSeconds = MutableStateFlow(60)
     val remainingSeconds: StateFlow<Int> = _remainingSeconds.asStateFlow()
-
     private var timerJob: Job? = null
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score.asStateFlow()
-
     private val _currentQuestionIndex = MutableStateFlow(0)
     val currentQuestionIndex: StateFlow<Int> = _currentQuestionIndex.asStateFlow()
+
+    private val _totalScore = MutableStateFlow(0)
+    val totalScore: StateFlow<Int> = _totalScore.asStateFlow()
 
     fun checkoutAnswer(
         total: Int,
@@ -70,13 +71,13 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
                     "viewmodel",
                     "failed to check answer: ${e.message}"
                 )
+
             }
         }
     }
 
     private fun startTimer() {
         timerJob?.cancel()
-
         timerJob = viewModelScope.launch {
             while (_remainingSeconds.value > 0) {
                 delay(1000)
@@ -84,10 +85,6 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
             }
             _lives.value = 0
         }
-    }
-
-    private fun stopTimer() {
-        timerJob?.cancel()
     }
 
     fun decreaseLife() {
@@ -109,6 +106,7 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
             _currentQuestionIndex.value = 0
             _remainingSeconds.value = 60
             _categories.value = emptyList()
+            _totalScore.value = 0
 
             runCatching {
                 _isLoading.value = true
@@ -116,7 +114,9 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
             }.onSuccess { response ->
                 if (response.isSuccessful) {
                     val quizResult = response.body()?.result?.firstOrNull()
+                    val loadedCategories = quizResult?.categories ?: emptyList()
                     _categories.value = quizResult?.categories ?: emptyList()
+                    _totalScore.value = calculateTotalScore(loadedCategories)
 
                     if (_categories.value.isNotEmpty()) {
                         startTimer()
@@ -138,5 +138,14 @@ class QuizViewModel(private val quizRepository: QuizRepository) : ViewModel() {
         timerJob?.cancel()
         super.onCleared()
     }
+
+    private fun calculateTotalScore(categories: List<Category>): Int {
+        return categories.sumOf { category ->
+            category.questions.sumOf { question ->
+                question.answers.firstOrNull()?.total ?: 0
+            }
+        }
+    }
+
 }
 
